@@ -24,8 +24,14 @@ export def setup []: [ nothing -> record<condition: closure, code: string> ] {
             } else {
                 []
             }
-
-            if \(open .env.nu | hash sha256\) not-in $allowed {
+            
+            let find = [
+              \(open .env.nu | hash sha256\),
+              \(pwd | path join .env.nu | path expand\),
+            ]
+            
+            let found = $find | any {|item| $item in $allowed }
+            if not $found {
                 error make --unspanned {
                     msg: $'\(ansi purple\)\('.env.nu' | path expand\)\(ansi reset\) is not allowed',
                     help: $'please run \(ansi default_dimmed\)nuenv allow\(ansi reset\) first',
@@ -60,19 +66,27 @@ def check-env-file [] {
 }
 
 # adds `./.env.nu` to the list of allowed "env" files
-export def "nuenv allow" [] {
+export def "nuenv allow" [
+  --use-path(-p) # Use path instead of SHA256
+] {
     check-env-file
 
     let allowed = get-allowed
 
+    let path = (pwd | path join '.env.nu' | path expand)
     let hash = open .env.nu | hash sha256
-    if $hash in $allowed {
+    if $hash in $allowed or $path in $allowed {
         warning "is already allowed"
         return
     }
 
     mkdir ($nu.cache-dir | path join "nuenv")
-    $hash | $in + "\n" out>> $NUENV_FILE
+    
+    if $use_path {
+      $path | $in + "\n" out>> $NUENV_FILE
+    } else {
+      $hash | $in + "\n" out>> $NUENV_FILE
+    }
     info "has been allowed"
 }
 
@@ -82,12 +96,13 @@ export def "nuenv disallow" [] {
 
     let allowed = get-allowed
 
+    let path = (pwd | path join '.env.nu' | path expand)
     let hash = open .env.nu | hash sha256
-    if $hash not-in $allowed {
+    if $hash not-in $allowed and $path not-in $allowed {
         warning "is already disallowed"
         return
     }
 
-    $allowed | find --invert $hash | to text | save --force $NUENV_FILE
+    $allowed | find --invert $hash | find --invert $path | to text | save --force $NUENV_FILE
     info "has been disallowed"
 }

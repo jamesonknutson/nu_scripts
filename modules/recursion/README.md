@@ -38,7 +38,7 @@ case in which it just returns the last result.
 ## Example usage
 
 ```nu
-use tramp.nu 
+use tramp.nu
 # Compute the factorial of a number
 # This version just returns either the value or a thunk.
 # Meant to be used in a trampoline
@@ -205,8 +205,8 @@ However, merge sort cannot so easily be converted into APS.
 This is because it has a growing ever deeper binary tree until it reaches
 its many base cases upon which it does all of its work (merging) as it collapses this
 tree.
- It does not, therefore have anywhere to gather intermediate  results in a 
-accumulator. 
+ It does not, therefore have anywhere to gather intermediate  results in a
+accumulator.
 
 It should be possible, however, to use CPS or continuation passing style
 to move calls into the tail position. This is left as an exercise for the reader.

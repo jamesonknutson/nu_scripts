@@ -13,8 +13,9 @@ def __zoxide_menu [] {
           description_text: yellow
       }
       source: { |buffer, position|
-          zoxide query -ls $buffer
-          | parse -r '(?P<description>[0-9]+) (?P<value>.+)'
+        zoxide query --list --score $buffer
+        | lines
+        | parse -r '^\s*(?<description>[0-9.]+)\s+(?<value>.+?)\s*?$'
       }
     }
 }
@@ -46,6 +47,7 @@ def __edit_keybinding [] {
 export-env {
     $env.config  = ($env.config
                   | upsert menus ($env.config.menus | append (__zoxide_menu))
-                  | upsert keybindings ($env.config.keybindings | append [(__zoxide_keybinding) (__edit_keybinding)])
+                  # | upsert keybindings ($env.config.keybindings | append [(__zoxide_keybinding) (__edit_keybinding)])
+                  | upsert keybindings ($env.config.keybindings | append [(__zoxide_keybinding)])
                   )
 }
