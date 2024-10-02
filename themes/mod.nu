@@ -68,17 +68,17 @@ export def "preview theme" [] {
 }
 
 def "nu-complete list themes" [] {
-    ls themes/themes/ | get name | path parse | get stem
+    ls themes/nu-themes/ | get name | path parse | get stem
 }
 
 # preview completion. For this to work, it should be ran from the nu_scripts folder
 def preview [theme: string@"nu-complete list themes"] {
-    commandline edit --insert $"use themes/themes/($theme).nu; $env.config.color_config = (char lparen)($theme)(char rparen); preview_theme | table -e"
+    commandline edit --insert $"use themes/nu-themes/($theme).nu; $env.config.color_config = (char lparen)($theme)(char rparen); preview theme | table -e"
 }
 
 # preview completion. For this to work, it should be ran from the nu_scripts folder
 def preview_small [theme: string@"nu-complete list themes"] {
-    commandline edit --insert $"use themes/themes/($theme).nu; $env.config.color_config = (char lparen)($theme)(char rparen); preview_theme_small | table -e"
+    commandline edit --insert $"use themes/nu-themes/($theme).nu; $env.config.color_config = (char lparen)($theme)(char rparen); preview theme small | table -e"
 }
 
 def get_type_keys [] {
@@ -230,7 +230,7 @@ export def "update terminal" [] {
     print $background
     let cursor = ($env.config?.color_config?.cursor? | default "#FFFFFF")
     print $cursor
-        
+
     $"
     (ansi -o $osc_screen_foreground_color)($foreground)(char bel)
     (ansi -o $osc_screen_background_color)($background)(char bel)
@@ -344,4 +344,16 @@ def "format record" [
             | $"(ansi ($color_rec))($in)(ansi reset)"
         }
     }
+}
+
+export def "apply-theme" [
+  theme: string@"nu-complete list themes"
+] {
+  (
+commandline edit --insert
+$'use themes/nu-themes/($theme).nu;
+($theme) set color_config;
+($theme) update terminal;
+[ (char lparen)preview theme | table -e(char rparen), (char lparen)preview theme small | table -e(char rparen) ] | str join (char lparen)char newline(char rparen);'
+  )
 }

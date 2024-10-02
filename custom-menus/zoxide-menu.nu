@@ -46,6 +46,9 @@ def __edit_keybinding [] {
 export-env {
     $env.config  = ($env.config
                   | upsert menus ($env.config.menus | append (__zoxide_menu))
-                  | upsert keybindings ($env.config.keybindings | append [(__zoxide_keybinding) (__edit_keybinding)])
+                  | upsert keybindings ($env.config.keybindings | append [
+                    (__zoxide_keybinding)
+                    # (__edit_keybinding)
+                    ])
                   )
 }
