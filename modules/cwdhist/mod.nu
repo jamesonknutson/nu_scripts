@@ -64,7 +64,7 @@ def __cwdhist_switching [] {
 export def empty-sqlite [] {
     # sqlite3 empty.db "VACUUM;"; cat empty.db | gzip | encode base64
     'H4sIAAAAAAAAAwsO9MksSVVIyy/KTSxRMGYQYGBkZHBQUGBgYGCEYhhAZhMLGBn0ihbwglgCZOgeBaNgFIyCUTAKRsEoGAWjYBSMglEwCkYBVQAANHgbMAAQAAA='
-    | decode base64 --binary | gzip -d
+    | decode new-base64 | gzip -d
 }
 
 export def 'cwd history delete' [cwd] {
@@ -74,7 +74,7 @@ export def 'cwd history delete' [cwd] {
 
 export-env {
     $env.cwd_history_full = false
-    $env.cwd_history_file = '~/.cache/nu_cwd_history.sqlite'
+    $env.cwd_history_file = ('~/.cache/nu_cwd_history.sqlite' | path expand)
 
     if not ($env.cwd_history_file | path exists) {
         empty-sqlite | save -f $env.cwd_history_file
