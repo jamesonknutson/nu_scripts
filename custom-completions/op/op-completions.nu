@@ -2177,7 +2177,7 @@ def "nu completion parse-context" [] string -> {cmd: string, args: list<string>}
 def "nu completion output" [
         ctx: string,    # entered command [sub command, args, + options]
         --complete (-c) # if the copletion should have a closing quote and terminating space
-    ] list<string> -> list<string>, string -> list<string> {
+    ]: any -> list<string> -> list<string>, string -> list<string> {
 
         let output = $in
         let parse = $ctx + ` `

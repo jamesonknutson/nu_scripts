@@ -39,7 +39,7 @@ export def main [
 
 def generate_viable_bash_string_flags [
   flag_record:record # A object filled all known flags and their values.  
-] -> list<string> {
+]: any -> list<string> {
 
   const acceptable_bash_types = [string int float duration filesize binary, bool]
 
