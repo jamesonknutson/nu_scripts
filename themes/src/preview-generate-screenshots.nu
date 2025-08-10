@@ -1,3 +1,4 @@
+use std-rfc/str
 # This script is meant to be run from the nu_scripts/themes/src
 # folder inside this repository.
 #
